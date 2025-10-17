@@ -6,6 +6,7 @@
 
 #include <duckpgq/core/functions/scalar.hpp>
 #include <duckpgq/core/utils/duckpgq_utils.hpp>
+#include <thread>
 
 namespace duckpgq {
 
@@ -63,12 +64,26 @@ static void IterativeLengthFunction(DataChunk &args, ExpressionState &state,
   // get src and dst vectors for searches
   auto &src = args.data[2];
   auto &dst = args.data[3];
+  //if (args.size() == 0) {
+    /*std::stringstream ss;
+    ss << std::this_thread::get_id();
+    uint64_t id = std::stoull(ss.str());
+    printf("thread: %lu | args (src, dst) pairs %lu\n", id, args.size());*/
+  //}
   UnifiedVectorFormat vdata_src;
   UnifiedVectorFormat vdata_dst;
   src.ToUnifiedFormat(args.size(), vdata_src);
   dst.ToUnifiedFormat(args.size(), vdata_dst);
   auto src_data = (int64_t *)vdata_src.data;
   auto dst_data = (int64_t *)vdata_dst.data;
+  /*for (auto i = 0u; i < args.size(); i++) {
+    int64_t src_pos = vdata_src.sel->get_index(i);
+    int64_t dst_pos = vdata_dst.sel->get_index(i);
+    if (vdata_src.validity.RowIsValid(src_pos)) {
+		printf("thread id: %lu | [%lu, %lu] | ", id, src_data[src_pos], dst_data[dst_pos]);
+    }
+  }*/
+  //printf("\n");
 
   ValidityMask &result_validity = FlatVector::Validity(result);
 
@@ -111,6 +126,7 @@ static void IterativeLengthFunction(DataChunk &args, ExpressionState &state,
           result_data[search_num] =
               (uint64_t)0; // path of length 0 does not require a search
         } else {
+          //printf("starting search for offset: %lu\n", src_data[src_pos]);
           visit1[src_data[src_pos]][lane] = true;
           lane_to_num[lane] = search_num; // active lane
           active++;
@@ -150,6 +166,7 @@ static void IterativeLengthFunction(DataChunk &args, ExpressionState &state,
       }
     }
   }
+  printf("thread exiting\n");
   duckpgq_state->csr_to_delete.insert(info.csr_id);
 }
 

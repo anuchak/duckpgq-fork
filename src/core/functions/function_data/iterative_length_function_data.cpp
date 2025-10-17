@@ -9,7 +9,11 @@ namespace duckpgq {
 namespace core {
 
 unique_ptr<FunctionData> IterativeLengthFunctionData::Copy() const {
-  return make_uniq<IterativeLengthFunctionData>(context, csr_id);
+  auto temp = make_uniq<IterativeLengthFunctionData>(context, csr_id);
+  if (morsel_dispatcher) {
+    temp->morsel_dispatcher = morsel_dispatcher;
+  }
+  return std::move(temp);
 }
 
 bool IterativeLengthFunctionData::Equals(const FunctionData &other_p) const {

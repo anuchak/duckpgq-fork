@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 set(TARGET_NAME duckpgq)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # DuckDB's extension distribution supports vcpkg. As such, dependencies can be
 # added in ./vcpkg.json and then used in cmake with find_package. Feel free to
@@ -11,6 +11,8 @@ find_package(OpenSSL REQUIRED)
 
 set(EXTENSION_NAME ${TARGET_NAME}_extension)
 set(LOADABLE_EXTENSION_NAME ${TARGET_NAME}_loadable_extension)
+
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g")
 
 project(${TARGET_NAME})
 include_directories(src/include)

@@ -7,6 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include <duckdb/execution/operator/join/morsel_dispatcher.h>
+
 #include "duckdb/main/client_context.hpp"
 #include "duckpgq/common.hpp"
 
@@ -16,6 +18,7 @@ namespace core {
 struct IterativeLengthFunctionData final : FunctionData {
   ClientContext &context;
   int32_t csr_id;
+  std::shared_ptr<MorselDispatcher> morsel_dispatcher;
 
   IterativeLengthFunctionData(ClientContext &context, int32_t csr_id)
       : context(context), csr_id(csr_id) {}
